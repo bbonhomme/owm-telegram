@@ -1,15 +1,27 @@
-# This file is a template, and might need editing before it works on your project.
-FROM golang:1.8 AS builder
+# The base go-image
+FROM golang:latest AS builder
 
-WORKDIR /usr/src/app
+# Create a directory for the app
+RUN mkdir /app
+ 
+# Set working directory
+WORKDIR /app
 
-COPY . .
-RUN go-wrapper download
-RUN go build -v
+#  Go modules on
+ENV GO111MODULE=on
 
-FROM buildpack-deps:jessie
 
-WORKDIR /usr/local/bin
+# Get the modules & dep. ready to download
+COPY go.mod .
+COPY go.sum .
+RUN go mod download
 
-COPY --from=builder /usr/src/app/app .
-CMD ["./app"]
+# Copy all files from the current directory to the app directory
+COPY . /app
+
+# Run command as described:
+# go build will build an executable file named bot in the current directory
+RUN go build -v -o bot .
+
+# Run the server executable
+CMD ["/app/bot"]
