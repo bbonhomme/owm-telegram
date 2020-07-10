@@ -60,3 +60,5 @@ Run the built docker image, please make sure to provide the environement variabl
 ```shell
 docker run -it --rm --env-file=.env --name mybot bot
 ```
+
+### Travis
