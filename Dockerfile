@@ -21,7 +21,12 @@ COPY . /app
 
 # Run command as described:
 # go build will build an executable file named bot in the current directory
-RUN go build -v -o bot .
+#RUN go build -v -o bot .
+RUN GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o bot .
+
+# Use a lightweight image to run the bot
+#FROM ubuntu:bionic
+#COPY --from=builder /app/bot /app/bot
 
 # Run the server executable
-CMD ["/app/bot"]
+ENTRYPOINT [ "/app/bot" ]
