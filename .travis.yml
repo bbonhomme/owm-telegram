@@ -3,9 +3,6 @@ language: go
 go: 
  - 1.14.3
 
-script:
- - go test
-
 services:
   - docker
 
@@ -16,6 +13,21 @@ before_install:
   - sudo apt-get update
   - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
 
+  script:
+    # Run tests
+  - 'make test'
+  
   # Build the image
-  - docker build -t bot .
-  - docker run -it -d  --rm -e "OWM_API_KEY=$OWM_API_KEY" -e "TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN"  --name mybot bot
+  - 'make build-image'
+
+  # Run the image
+  - 'run-image'
+
+after_success:
+  - if [[ "$TRAVIS_BRANCH" == "master" ]]; then
+      docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD ;
+      make push-image ;
+    fi
+
+notifications:
+  email: false
