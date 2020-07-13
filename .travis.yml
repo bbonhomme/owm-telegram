@@ -21,13 +21,13 @@ before_install:
 
 script:
     # Run tests
-  - 'make test'
+  - make test
   
   # Build the image
-  - 'make build-image'
+  - make build-image
 
   # Run the image
-  - 'make run-image'
+  - make run-image
 
 
 after_success:
