@@ -54,7 +54,6 @@ func RunBot() {
 			response := bottl.NewMessage(update.Message.Chat.ID, message)
 			response.ParseMode = Markdown
 
-			
 			bot.Send(response)
 		case helpCommand:
 			message := "You just have to type `/isitsunny` and give you your location, if you don't want to, well I am pretty useless then 😢"
