@@ -18,4 +18,4 @@ before_install:
 
   # Build the image
   - docker build -t bot .
-  - docker run -it --rm --env-file=.env --name mybot bot
+  - docker run -it -d  --rm -e "OWM_API_KEY=$OWM_API_KEY" -e "TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN"  --name mybot bot
