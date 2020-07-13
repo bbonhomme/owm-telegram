@@ -3,15 +3,21 @@ language: go
 go: 
  - 1.14.3
 
+sudo: required
+
 services:
   - docker
 
 before_install:
-  #Update docker latest
+  #Install & update docker latest
   - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
   - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
   - sudo apt-get update
   - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
+
+  # Install Heroku CLI
+  - wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh
+
 
 script:
     # Run tests
@@ -21,13 +27,22 @@ script:
   - 'make build-image'
 
   # Run the image
-  - 'run-image'
+  - 'make run-image'
+
 
 after_success:
+  # Push to Docker Hub registry
   - if [[ "$TRAVIS_BRANCH" == "master" ]]; then
       docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD ;
       make push-image ;
     fi
+  
+  # Deploy to Heroku
+  - heroku plugins:install @heroku-cli/plugin-container-registry
+  - docker login --username _ --password=$HEROKU_API_KEY registry.heroku.com
+  - heroku container:push web --app $HEROKU_APP_NAME
+  - heroku container:release web --app $HEROKU_APP_NAME
+
 
 notifications:
   email: false
